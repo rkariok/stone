@@ -29,13 +29,13 @@ export default function StoneTopEstimator() {
 
     const slabCost = parseFloat(stone["Slab Cost"]);
     const fabCost = parseFloat(stone["Fab Cost"]);
-    const markup = parseFloat(stone["Markup"]);
+    const markup = parseFloat(stone["Mark Up"]);
 
     const w = parseFloat(width);
     const d = parseFloat(depth);
     const g = parseFloat(grommet);
 
-    if (!w || !d) return;
+    if (!w || !d || isNaN(slabCost) || isNaN(fabCost) || isNaN(markup)) return;
 
     const area = w * d;
     const gArea = g ? Math.PI * (g / 2) ** 2 : 0;
@@ -51,6 +51,11 @@ export default function StoneTopEstimator() {
       width: w,
       depth: d,
       grommet: g,
+      usableAreaSqft,
+      topsPerSlab,
+      materialCost,
+      fabricationCost,
+      rawCost,
       finalPrice
     });
   };
@@ -79,9 +84,15 @@ export default function StoneTopEstimator() {
           {result && (
             <>
               <div className="pt-4 space-y-2">
-                <h3 className="font-semibold text-lg">Summary (on screen):</h3>
                 <div><strong>Stone Type:</strong> {result.stone}</div>
-                <div><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</div>
+                <div><strong>Dimensions:</strong> {result.width}" x {result.depth}"</div>
+                <div><strong>Grommet Hole:</strong> {result.grommet || "N/A"}"</div>
+                <div><strong>Usable SQFT:</strong> {result.usableAreaSqft.toFixed(2)}</div>
+                <div><strong>Tops Per Slab:</strong> {result.topsPerSlab}</div>
+                <div><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</div>
+                <div><strong>Fabrication Cost:</strong> ${result.fabricationCost.toFixed(2)}</div>
+                <div><strong>Total Raw Cost:</strong> ${result.rawCost.toFixed(2)}</div>
+                <div><strong>Final Price (w/ Markup):</strong> ${result.finalPrice.toFixed(2)}</div>
               </div>
               <div className="pt-4">
                 <Button onClick={handleDownloadPDF}>Download Quote (PDF)</Button>
@@ -92,7 +103,12 @@ export default function StoneTopEstimator() {
                   <p><strong>Stone Type:</strong> {result.stone}</p>
                   <p><strong>Dimensions:</strong> {result.width}" x {result.depth}"</p>
                   <p><strong>Grommet Hole:</strong> {result.grommet || "N/A"}"</p>
-                  <p><strong>Total Price:</strong> ${result.finalPrice.toFixed(2)}</p>
+                  <p><strong>Usable SQFT:</strong> {result.usableAreaSqft.toFixed(2)}</p>
+                  <p><strong>Tops Per Slab:</strong> {result.topsPerSlab}</p>
+                  <p><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</p>
+                  <p><strong>Fabrication Cost:</strong> ${result.fabricationCost.toFixed(2)}</p>
+                  <p><strong>Total Raw Cost:</strong> ${result.rawCost.toFixed(2)}</p>
+                  <p><strong>Final Price (w/ Markup):</strong> ${result.finalPrice.toFixed(2)}</p>
                   <p><em>Generated on: {new Date().toLocaleString()}</em></p>
                 </div>
               </div>
