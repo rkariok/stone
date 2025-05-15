@@ -10,7 +10,6 @@ export default function StoneTopEstimator() {
   const [selectedStone, setSelectedStone] = useState('');
   const [width, setWidth] = useState('');
   const [depth, setDepth] = useState('');
-  const [grommet, setGrommet] = useState('');
   const [result, setResult] = useState(null);
   const pdfRef = useRef();
 
@@ -33,13 +32,11 @@ export default function StoneTopEstimator() {
 
     const w = parseFloat(width);
     const d = parseFloat(depth);
-    const g = parseFloat(grommet);
 
     if (!w || !d || isNaN(slabCost) || isNaN(fabCost) || isNaN(markup)) return;
 
     const area = w * d;
-    const gArea = g ? Math.PI * (g / 2) ** 2 : 0;
-    const usableAreaSqft = (area - gArea) / 144;
+    const usableAreaSqft = area / 144;
     const topsPerSlab = Math.floor((63 * 126) / (usableAreaSqft * 144));
     const materialCost = slabCost / topsPerSlab;
     const fabricationCost = usableAreaSqft * fabCost;
@@ -50,7 +47,6 @@ export default function StoneTopEstimator() {
       stone: selectedStone,
       width: w,
       depth: d,
-      grommet: g,
       usableAreaSqft,
       topsPerSlab,
       materialCost,
@@ -78,7 +74,6 @@ export default function StoneTopEstimator() {
           </select>
           <Input type="number" placeholder="Width (inches)" value={width} onChange={e => setWidth(e.target.value)} />
           <Input type="number" placeholder="Depth (inches)" value={depth} onChange={e => setDepth(e.target.value)} />
-          <Input type="number" placeholder="Grommet Hole Diameter (inches, optional)" value={grommet} onChange={e => setGrommet(e.target.value)} />
           <Button onClick={handleCalculate}>Calculate</Button>
 
           {result && (
@@ -86,7 +81,6 @@ export default function StoneTopEstimator() {
               <div className="pt-4 space-y-2">
                 <div><strong>Stone Type:</strong> {result.stone}</div>
                 <div><strong>Dimensions:</strong> {result.width}" x {result.depth}"</div>
-                <div><strong>Grommet Hole:</strong> {result.grommet || "N/A"}"</div>
                 <div><strong>Usable SQFT:</strong> {result.usableAreaSqft.toFixed(2)}</div>
                 <div><strong>Tops Per Slab:</strong> {result.topsPerSlab}</div>
                 <div><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</div>
@@ -102,7 +96,6 @@ export default function StoneTopEstimator() {
                   <h2>Stone Top Quote</h2>
                   <p><strong>Stone Type:</strong> {result.stone}</p>
                   <p><strong>Dimensions:</strong> {result.width}" x {result.depth}"</p>
-                  <p><strong>Grommet Hole:</strong> {result.grommet || "N/A"}"</p>
                   <p><strong>Usable SQFT:</strong> {result.usableAreaSqft.toFixed(2)}</p>
                   <p><strong>Tops Per Slab:</strong> {result.topsPerSlab}</p>
                   <p><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</p>
