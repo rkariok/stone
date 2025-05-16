@@ -77,6 +77,17 @@ export default function StoneTopEstimator() {
         <div className="w-full space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-800 mb-1">Stone Type</label>
+        {file && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600 mb-2">Preview:</p>
+            <img
+              src={URL.createObjectURL(file)}
+              alt="Uploaded preview"
+              className="mx-auto rounded border max-h-60"
+            />
+          </div>
+        )}
+    
             <select value={selectedStone} onChange={e => setSelectedStone(e.target.value)} className="w-full h-10 px-3 border border-gray-300 rounded-lg">
               {stoneOptions.map((s, i) => (
                 <option key={i} value={s["Stone Type"]}>{s["Stone Type"]}</option>
@@ -86,26 +97,70 @@ export default function StoneTopEstimator() {
           <div className="flex space-x-4">
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-800 mb-1">Width (inches)</label>
+        {file && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600 mb-2">Preview:</p>
+            <img
+              src={URL.createObjectURL(file)}
+              alt="Uploaded preview"
+              className="mx-auto rounded border max-h-60"
+            />
+          </div>
+        )}
+    
               <input type="number" value={width} onChange={e => setWidth(e.target.value)} className="w-full h-10 px-3 border border-gray-300 rounded-lg" />
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-800 mb-1">Depth (inches)</label>
+        {file && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600 mb-2">Preview:</p>
+            <img
+              src={URL.createObjectURL(file)}
+              alt="Uploaded preview"
+              className="mx-auto rounded border max-h-60"
+            />
+          </div>
+        )}
+    
               <input type="number" value={depth} onChange={e => setDepth(e.target.value)} className="w-full h-10 px-3 border border-gray-300 rounded-lg" />
             </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-800 mb-1">Upload Drawing</label>
+        {file && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600 mb-2">Preview:</p>
+            <img
+              src={URL.createObjectURL(file)}
+              alt="Uploaded preview"
+              className="mx-auto rounded border max-h-60"
+            />
+          </div>
+        )}
+    
             <label className="relative flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer">
               <input type="file" onChange={handleDrawingUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
               {!loadingAI ? (
                 <>
-                  <span className="text-sm text-gray-700 font-medium">Click to upload drawing</span>
-                  <span className="text-xs text-gray-500">AI will extract dimensions</span>
+                  <span className="text-sm text-gray-700 font-medium">Click to upload drawing</span>) : (<span className="text-gray-400 text-center text-sm">Click to upload drawing<br />AI will extract dimensions</span>)}
+                  <span className="text-xs text-gray-500">AI will extract dimensions</span>) : (<span className="text-gray-400 text-center text-sm">Click to upload drawing<br />AI will extract dimensions</span>)}
                 </>
               ) : (
-                <span className="text-sm text-blue-600">Extracting dimensions...</span>
+                <span className="text-sm text-blue-600">Extracting dimensions...</span>) : (<span className="text-gray-400 text-center text-sm">Click to upload drawing<br />AI will extract dimensions</span>)}
               )}
             </label>
+        {file && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600 mb-2">Preview:</p>
+            <img
+              src={URL.createObjectURL(file)}
+              alt="Uploaded preview"
+              className="mx-auto rounded border max-h-60"
+            />
+          </div>
+        )}
+    
           </div>
         </div>
         <button onClick={handleCalculate} className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg transition">Calculate Estimate</button>
