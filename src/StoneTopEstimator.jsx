@@ -91,13 +91,13 @@ export default function StoneTopEstimator() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl space-y-6">
-        <div className="text-center">
-          <img src="/AIC.jpg" alt="Logo" className="mx-auto mb-2" style={{ maxWidth: '140px' }} />
-          <p className="text-sm text-gray-500">Developed by Roy Kariok</p>
+      <div className="w-full max-w-2xl space-y-6">
+        <div className="text-center mb-6">
+          <img src="/AIC.jpg" alt="Logo" className="mx-auto" style={{ maxWidth: '160px' }} />
+          <p className="text-sm text-gray-500 mt-2">Developed by Roy Kariok</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="bg-white p-8 rounded-2xl shadow-lg space-y-4">
           <div>
             <label className="font-semibold block mb-1">Stone Type:</label>
             <select className="border w-full p-2 rounded" value={selectedStone} onChange={e => setSelectedStone(e.target.value)}>
@@ -111,31 +111,31 @@ export default function StoneTopEstimator() {
           <input type="file" onChange={handleDrawingUpload} className="w-full" />
           {loadingAI && <p className="text-blue-500 text-sm">Extracting dimensions with AI...</p>}
           <button onClick={handleCalculate} className="bg-black hover:bg-gray-800 transition text-white px-4 py-2 rounded w-full">Calculate</button>
-        </div>
 
-        {result && (
-          <>
-            <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded">
-              <div><strong>Stone Type:</strong> {result.stone}</div>
-              <div><strong>Dimensions:</strong> {result.width}" x {result.depth}"</div>
-              <div><strong>Usable Area:</strong> {result.usableAreaSqft.toFixed(2)} sq ft</div>
-              <div><strong>Tops Per Slab:</strong> {result.topsPerSlab}</div>
-              <div><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</div>
-              <div><strong>Fabrication Cost:</strong> ${result.fabricationCost.toFixed(2)}</div>
-              <div><strong>Total Raw Cost:</strong> ${result.rawCost.toFixed(2)}</div>
-              <div><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</div>
-            </div>
-            <button onClick={handleDownloadPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full mt-4">Download PDF</button>
-            <div style={{ display: 'none' }}>
-              <div ref={pdfRef}>
-                <h2>Stone Top Quote</h2>
-                <p><strong>Stone:</strong> {result.stone}</p>
-                <p><strong>Dimensions:</strong> {result.width}" x {result.depth}"</p>
-                <p><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</p>
+          {result && (
+            <>
+              <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded">
+                <div><strong>Stone Type:</strong> {result.stone}</div>
+                <div><strong>Dimensions:</strong> {result.width}" x {result.depth}"</div>
+                <div><strong>Usable Area:</strong> {result.usableAreaSqft.toFixed(2)} sq ft</div>
+                <div><strong>Tops Per Slab:</strong> {result.topsPerSlab}</div>
+                <div><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</div>
+                <div><strong>Fabrication Cost:</strong> ${result.fabricationCost.toFixed(2)}</div>
+                <div><strong>Total Raw Cost:</strong> ${result.rawCost.toFixed(2)}</div>
+                <div><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</div>
               </div>
-            </div>
-          </>
-        )}
+              <button onClick={handleDownloadPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full mt-4">Download PDF</button>
+              <div style={{ display: 'none' }}>
+                <div ref={pdfRef}>
+                  <h2>Stone Top Quote</h2>
+                  <p><strong>Stone:</strong> {result.stone}</p>
+                  <p><strong>Dimensions:</strong> {result.width}" x {result.depth}"</p>
+                  <p><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</p>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
