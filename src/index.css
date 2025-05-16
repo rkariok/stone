@@ -1,1 +1,8 @@
-body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #f9fafb; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
