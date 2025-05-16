@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import html2pdf from "html2pdf.js";
 
@@ -12,10 +13,10 @@ export default function StoneTopEstimator() {
 
   useEffect(() => {
     fetch("https://opensheet.elk.sh/1g8w934dZH-NEuKfK8wg_RZYiXyLSSf87H0Xwec6KAAc/Sheet1")
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setStoneOptions(data);
-        setSelectedStone(data[0]?.["Stone Type"] || '');
+        setSelectedStone(data[0]?.["Stone Type"]);
       });
   }, []);
 
@@ -29,7 +30,9 @@ export default function StoneTopEstimator() {
     try {
       const res = await fetch("https://gpt4-drawing-backend.vercel.app/api/extract-dimensions", {
         method: "POST",
-        headers: { "x-vercel-protection-bypass": "paramusicalkariokparamusicalkari" },
+        headers: {
+          "x-vercel-protection-bypass": "paramusicalkariokparamusicalkari"
+        },
         body: formData
       });
       const json = await res.json();
@@ -40,7 +43,7 @@ export default function StoneTopEstimator() {
         alert("AI Error: " + (json.error || "Unexpected response"));
       }
     } catch {
-      alert("Failed to extract dimensions.");
+      alert("Failed to extract dimensions from drawing.");
     } finally {
       setLoadingAI(false);
     }
@@ -49,20 +52,24 @@ export default function StoneTopEstimator() {
   const handleCalculate = () => {
     const stone = stoneOptions.find(s => s["Stone Type"] === selectedStone);
     if (!stone) return;
+
     const slabCost = parseFloat(stone["Slab Cost"]);
     const fabCost = parseFloat(stone["Fab Cost"]);
     const markup = parseFloat(stone["Mark Up"]);
     const w = parseFloat(width);
     const d = parseFloat(depth);
+
     if (!w || !d || isNaN(slabCost) || isNaN(fabCost) || isNaN(markup)) return;
+
     const area = w * d;
-    const sqft = area / 144;
+    const usableAreaSqft = area / 144;
     const topsPerSlab = Math.floor((63 * 126) / area);
     const materialCost = slabCost / topsPerSlab;
-    const fabricationCost = sqft * fabCost;
+    const fabricationCost = usableAreaSqft * fabCost;
     const rawCost = materialCost + fabricationCost;
     const finalPrice = rawCost * markup;
-    setResult({ stone: selectedStone, width: w, depth: d, sqft, topsPerSlab, materialCost, fabricationCost, rawCost, finalPrice });
+
+    setResult({ stone: selectedStone, width: w, depth: d, usableAreaSqft, topsPerSlab, materialCost, fabricationCost, rawCost, finalPrice });
   };
 
   const handleDownloadPDF = () => {
@@ -71,48 +78,47 @@ export default function StoneTopEstimator() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="bg-white w-full max-w-md p-6 rounded-xl shadow-lg space-y-4 flex flex-col items-center">
-        <img src="/AIC.jpg" alt="Logo" className="w-16 h-auto mb-2" />
-        <h1 className="text-center text-xl font-semibold">Developed by Roy Kariok</h1>
-        <div className="w-full grid grid-cols-1 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Stone Type</label>
-            <select value={selectedStone} onChange={e => setSelectedStone(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg">
-              {stoneOptions.map((s, i) => (
-                <option key={i} value={s["Stone Type"]}>{s["Stone Type"]}</option>
+    <div className="min-h-screen bg-[#f5f7fa] flex items-center justify-center px-4 py-10">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl space-y-6 flex flex-col items-center">
+        <div className="flex justify-center">
+          <img src="/AIC.jpg" alt="Logo" className="w-24 h-auto object-contain mx-auto mb-4" />
+        </div>
+        <h1 className="text-center text-lg font-semibold text-gray-600">Developed by Roy Kariok</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="col-span-2">
+            <label className="block mb-1 font-medium text-sm">Stone Type</label>
+            <select value={selectedStone} onChange={e => setSelectedStone(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg text-sm">
+              {stoneOptions.map((stone, idx) => (
+                <option key={idx} value={stone["Stone Type"]}>{stone["Stone Type"]}</option>
               ))}
             </select>
           </div>
-          <div className="flex space-x-2">
-            <div className="flex-1">
-              <label className="block text-sm mb-1">Width (in)</label>
-              <input type="number" value={width} onChange={e => setWidth(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div className="flex-1">
-              <label className="block text-sm mb-1">Depth (in)</label>
-              <input type="number" value={depth} onChange={e => setDepth(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg" />
-            </div>
+          <div>
+            <label className="block mb-1 text-sm">Width (in)</label>
+            <input type="number" value={width} onChange={e => setWidth(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg text-sm" />
           </div>
           <div>
-            <label className="block text-sm mb-1">Upload Drawing</label>
-            <input type="file" onChange={handleDrawingUpload} className="w-full" />
-            {loadingAI && <p className="text-blue-600 text-sm mt-1">Extracting dimensions...</p>}
+            <label className="block mb-1 text-sm">Depth (in)</label>
+            <input type="number" value={depth} onChange={e => setDepth(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg text-sm" />
+          </div>
+          <div className="col-span-2">
+            <input type="file" onChange={handleDrawingUpload} className="w-full text-sm" />
           </div>
         </div>
+        {loadingAI && <p className="text-blue-500 text-sm text-center">Extracting dimensions with AI...</p>}
         <button onClick={handleCalculate} className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition">Calculate</button>
 
         {result && (
-          <div className="w-full bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm space-y-2">
-            <p><strong>Stone:</strong> {result.stone}</p>
-            <p><strong>Dimensions:</strong> {result.width}" x {result.depth}"</p>
-            <p><strong>Area:</strong> {result.sqft.toFixed(2)} sq ft</p>
-            <p><strong>Tops/Slab:</strong> {result.topsPerSlab}</p>
-            <p><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</p>
-            <p><strong>Fab Cost:</strong> ${result.fabricationCost.toFixed(2)}</p>
-            <p><strong>Raw Cost:</strong> ${result.rawCost.toFixed(2)}</p>
-            <p className="text-lg font-semibold text-green-700"><strong>Final:</strong> ${result.finalPrice.toFixed(2)}</p>
-            <button onClick={handleDownloadPDF} className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Download PDF</button>
+          <div className="space-y-2 text-sm bg-gray-50 p-4 rounded-xl border border-gray-200">
+            <div><strong>Stone:</strong> {result.stone}</div>
+            <div><strong>Dimensions:</strong> {result.width}" x {result.depth}"</div>
+            <div><strong>Usable Area:</strong> {result.usableAreaSqft.toFixed(2)} sq ft</div>
+            <div><strong>Tops Per Slab:</strong> {result.topsPerSlab}</div>
+            <div><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</div>
+            <div><strong>Fabrication Cost:</strong> ${result.fabricationCost.toFixed(2)}</div>
+            <div><strong>Raw Cost:</strong> ${result.rawCost.toFixed(2)}</div>
+            <div className="text-base font-semibold text-green-700"><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</div>
+            <button onClick={handleDownloadPDF} className="w-full bg-blue-600 text-white py-2 mt-2 rounded-lg hover:bg-blue-700 transition">Download PDF</button>
             <div style={{ display: 'none' }}><div ref={pdfRef}><h2>Stone Top Quote</h2><p><strong>Stone:</strong> {result.stone}</p><p><strong>Dimensions:</strong> {result.width}" x {result.depth}"</p><p><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</p></div></div>
           </div>
         )}
