@@ -125,7 +125,7 @@ export default function StoneTopEstimator() {
 
         <button onClick={handleCalculate} className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">Calculate</button>
       
-        {{result && (
+        {result && (
           <div className="bg-gray-50 rounded-xl p-5 text-sm space-y-2 border border-gray-200 mt-4 text-left">
             <div className="grid grid-cols-2 gap-2">
               <div><strong>Stone:</strong> {{result.stone}}</div>
