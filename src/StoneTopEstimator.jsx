@@ -78,26 +78,28 @@ export default function StoneTopEstimator() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <img src="/AIC.jpg" alt="Logo" className="mb-4" style={{ maxWidth: '180px', width: '100%' }} />
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4">
-        <h1 className="text-lg font-semibold text-center text-gray-700">Developed by Roy Kariok</h1>
-        <div>
-          <label className="block mb-1 font-medium">Stone Type:</label>
-          <select value={selectedStone} onChange={e => setSelectedStone(e.target.value)} className="w-full p-2 border rounded">
-            {stoneOptions.map((stone, idx) => (
-              <option key={idx} value={stone["Stone Type"]}>{stone["Stone Type"]}</option>
-            ))}
-          </select>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4 text-center">
+        <img src="/AIC.jpg" alt="Logo" className="mx-auto mb-2" style={{ maxWidth: '150px', width: '100%' }} />
+        <h1 className="text-base font-medium text-gray-700">Developed by Roy Kariok</h1>
+        <div className="text-left space-y-2">
+          <div>
+            <label className="block mb-1 font-medium">Stone Type:</label>
+            <select value={selectedStone} onChange={e => setSelectedStone(e.target.value)} className="w-full p-2 border rounded">
+              {stoneOptions.map((stone, idx) => (
+                <option key={idx} value={stone["Stone Type"]}>{stone["Stone Type"]}</option>
+              ))}
+            </select>
+          </div>
+          <input type="number" placeholder="Width (in)" value={width} onChange={e => setWidth(e.target.value)} className="w-full p-2 border rounded" />
+          <input type="number" placeholder="Depth (in)" value={depth} onChange={e => setDepth(e.target.value)} className="w-full p-2 border rounded" />
+          <input type="file" onChange={handleDrawingUpload} className="w-full" />
         </div>
-        <input type="number" placeholder="Width (in)" value={width} onChange={e => setWidth(e.target.value)} className="w-full p-2 border rounded" />
-        <input type="number" placeholder="Depth (in)" value={depth} onChange={e => setDepth(e.target.value)} className="w-full p-2 border rounded" />
-        <input type="file" onChange={handleDrawingUpload} className="w-full" />
         {loadingAI && <p className="text-blue-500 text-sm">Extracting dimensions with AI...</p>}
         <button onClick={handleCalculate} className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">Calculate</button>
 
         {result && (
-          <div className="space-y-2 text-sm bg-gray-50 p-4 rounded">
+          <div className="space-y-2 text-sm bg-gray-50 p-4 rounded text-left">
             <div><strong>Stone:</strong> {result.stone}</div>
             <div><strong>Dimensions:</strong> {result.width}" x {result.depth}"</div>
             <div><strong>Usable Area:</strong> {result.usableAreaSqft.toFixed(2)} sq ft</div>
