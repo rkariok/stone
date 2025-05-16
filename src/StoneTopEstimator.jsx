@@ -4,16 +4,14 @@ import { Input } from "./components/ui/input";
 import { Button } from "./components/ui/button";
 import { Card, CardContent } from "./components/ui/card";
 import html2pdf from "html2pdf.js";
-import Tesseract from "tesseract.js";
 
 export default function StoneTopEstimator() {
   const [stoneOptions, setStoneOptions] = useState([]);
   const [selectedStone, setSelectedStone] = useState('');
   const [width, setWidth] = useState('');
   const [depth, setDepth] = useState('');
-  const [drawingPreview, setDrawingPreview] = useState(null);
-  const [ocrText, setOcrText] = useState('');
   const [result, setResult] = useState(null);
+  const [loadingAI, setLoadingAI] = useState(false);
   const pdfRef = useRef();
 
   useEffect(() => {
@@ -21,24 +19,32 @@ export default function StoneTopEstimator() {
       .then((res) => res.json())
       .then((data) => {
         setStoneOptions(data);
-        setSelectedStone(data[0]?.["Stone Type"] || '');
+        setSelectedStone(data[0]?.["Stone Type"]);
       });
   }, []);
 
-  const handleFileUpload = async (e) => {
+  const handleDrawingUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setDrawingPreview(url);
 
-    const { data: { text } } = await Tesseract.recognize(file, 'eng');
-    setOcrText(text);
+    setLoadingAI(true);
+    const formData = new FormData();
+    formData.append("image", file);
 
-    const matches = text.match(/\d+\s?["”]/g);
-    if (matches && matches.length >= 2) {
-      const nums = matches.map(m => parseInt(m));
-      setWidth(nums[0]);
-      setDepth(nums[1]);
+    try {
+      const res = await fetch("https://gpt4-drawing-backend.vercel.app/extract-dimensions", {
+        method: "POST",
+        body: formData
+      });
+      const json = await res.json();
+      if (json.success) {
+        setWidth(json.data.width);
+        setDepth(json.data.depth);
+      }
+    } catch (err) {
+      alert("Failed to extract dimensions from drawing.");
+    } finally {
+      setLoadingAI(false);
     }
   };
 
@@ -49,7 +55,6 @@ export default function StoneTopEstimator() {
     const slabCost = parseFloat(stone["Slab Cost"]);
     const fabCost = parseFloat(stone["Fab Cost"]);
     const markup = parseFloat(stone["Mark Up"]);
-
     const w = parseFloat(width);
     const d = parseFloat(depth);
 
@@ -94,16 +99,9 @@ export default function StoneTopEstimator() {
           </select>
           <Input type="number" placeholder="Width (inches)" value={width} onChange={e => setWidth(e.target.value)} />
           <Input type="number" placeholder="Depth (inches)" value={depth} onChange={e => setDepth(e.target.value)} />
-          <div>
-            <label className="block font-semibold mt-2">Upload Drawing:</label>
-            <Input type="file" accept="image/*,application/pdf" onChange={handleFileUpload} />
-            {drawingPreview && (
-              <>
-                <img src={drawingPreview} alt="Drawing preview" className="max-w-full border my-2" />
-                <p className="text-xs text-gray-500">OCR Text: {ocrText}</p>
-              </>
-            )}
-          </div>
+          <label className="block font-semibold mt-2">Upload Drawing:</label>
+          <Input type="file" accept="image/*,application/pdf" onChange={handleDrawingUpload} />
+          {loadingAI && <p className="text-sm text-blue-500">Extracting dimensions with AI...</p>}
           <Button onClick={handleCalculate}>Calculate</Button>
 
           {result && (
