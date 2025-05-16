@@ -71,9 +71,9 @@ export default function StoneTopEstimator() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#f5f7fa] px-4 py-12">
-      <div className="bg-white w-full max-w-sm p-8 rounded-3xl shadow-lg flex flex-col items-center space-y-6">
+      <div className="bg-white w-full max-w-sm p-8 rounded-3xl shadow-lg flex flex-col items-center space-y-4">
         <img src="/AIC.jpg" alt="Logo" className="w-24 h-auto mb-2" />
-        <h1 className="text-center text-base font-medium text-gray-700">Developed by Roy Kariok</h1>
+        <p className="text-center text-xs text-gray-600 mb-4">Developed by Roy Kariok</p>
         <div className="w-full space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-800 mb-1">Stone Type</label>
