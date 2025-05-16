@@ -159,7 +159,6 @@ export default function StoneTopEstimator() {
     Click to upload drawing<br />AI will extract dimensions
   </span>
 )}
-              )}
             </label>
         {file && (
           <div className="mt-4 text-center">
