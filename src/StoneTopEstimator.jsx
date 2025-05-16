@@ -9,6 +9,7 @@ export default function StoneTopEstimator() {
   const [depth, setDepth] = useState('');
   const [file, setFile] = useState(null);
   const [loadingAI, setLoadingAI] = useState(false);
+  const [result, setResult] = useState(null);
   const pdfRef = useRef();
 
   useEffect(() => {
@@ -70,7 +71,7 @@ export default function StoneTopEstimator() {
     const rawCost = materialCost + fabricationCost;
     const finalPrice = rawCost * markup;
 
-    alert("Final Price: $" + finalPrice.toFixed(2));
+    setResult({ stone: selectedStone, width: w, depth: d, usableAreaSqft, topsPerSlab, materialCost, fabricationCost, rawCost, finalPrice });
   };
 
   return (
@@ -123,6 +124,24 @@ export default function StoneTopEstimator() {
         </div>
 
         <button onClick={handleCalculate} className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">Calculate</button>
+      
+        {{result && (
+          <div className="bg-gray-50 rounded-xl p-5 text-sm space-y-2 border border-gray-200 mt-4 text-left">
+            <div className="grid grid-cols-2 gap-2">
+              <div><strong>Stone:</strong> {{result.stone}}</div>
+              <div><strong>Size:</strong> {{result.width}}" x {{result.depth}}"</div>
+              <div><strong>Usable Area:</strong> {{result.usableAreaSqft.toFixed(2)}} sq ft</div>
+              <div><strong>Tops Per Slab:</strong> {{result.topsPerSlab}}</div>
+              <div><strong>Material:</strong> ${{result.materialCost.toFixed(2)}}</div>
+              <div><strong>Fabrication:</strong> ${{result.fabricationCost.toFixed(2)}}</div>
+              <div><strong>Raw Cost:</strong> ${{result.rawCost.toFixed(2)}}</div>
+            </div>
+            <div className="text-center text-xl font-bold text-green-600 pt-2">
+              Final Price: ${{result.finalPrice.toFixed(2)}}
+            </div>
+          </div>
+        )}}
+
       </div>
     </div>
   );
