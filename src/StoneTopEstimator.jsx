@@ -121,7 +121,7 @@ export default function StoneTopEstimator() {
             <div><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</div>
           </div>
           <button onClick={handleDownloadPDF} className="bg-blue-600 text-white px-4 py-2 mt-2 rounded">Download PDF</button>
-          <div style={ display: 'none' }>
+          <div style={{ display: 'none' }}>
             <div ref={pdfRef}>
               <h2>Stone Top Quote</h2>
               <p><strong>Stone:</strong> {result.stone}</p>
