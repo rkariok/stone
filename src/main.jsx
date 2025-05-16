@@ -4,7 +4,5 @@ import StoneTopEstimator from './StoneTopEstimator';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <StoneTopEstimator />
-  </React.StrictMode>
+  <React.StrictMode><StoneTopEstimator /></React.StrictMode>
 );
