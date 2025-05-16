@@ -78,28 +78,38 @@ export default function StoneTopEstimator() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4 text-center">
-        <img src="/AIC.jpg" alt="Logo" className="mx-auto mb-2" style={{ maxWidth: '150px', width: '100%' }} />
-        <h1 className="text-base font-medium text-gray-700">Developed by Roy Kariok</h1>
-        <div className="text-left space-y-2">
-          <div>
-            <label className="block mb-1 font-medium">Stone Type:</label>
-            <select value={selectedStone} onChange={e => setSelectedStone(e.target.value)} className="w-full p-2 border rounded">
+    <div className="min-h-screen bg-[#f5f7fa] flex items-center justify-center p-6">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl space-y-6">
+        <div className="flex justify-center">
+          <img src="/AIC.jpg" alt="Logo" className="w-28 h-auto rounded" />
+        </div>
+        <h1 className="text-center text-lg font-semibold text-gray-600">Developed by Roy Kariok</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="col-span-2">
+            <label className="block mb-1 font-medium text-sm">Stone Type</label>
+            <select value={selectedStone} onChange={e => setSelectedStone(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg text-sm">
               {stoneOptions.map((stone, idx) => (
                 <option key={idx} value={stone["Stone Type"]}>{stone["Stone Type"]}</option>
               ))}
             </select>
           </div>
-          <input type="number" placeholder="Width (in)" value={width} onChange={e => setWidth(e.target.value)} className="w-full p-2 border rounded" />
-          <input type="number" placeholder="Depth (in)" value={depth} onChange={e => setDepth(e.target.value)} className="w-full p-2 border rounded" />
-          <input type="file" onChange={handleDrawingUpload} className="w-full" />
+          <div>
+            <label className="block mb-1 text-sm">Width (in)</label>
+            <input type="number" value={width} onChange={e => setWidth(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg text-sm" />
+          </div>
+          <div>
+            <label className="block mb-1 text-sm">Depth (in)</label>
+            <input type="number" value={depth} onChange={e => setDepth(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg text-sm" />
+          </div>
+          <div className="col-span-2">
+            <input type="file" onChange={handleDrawingUpload} className="w-full text-sm" />
+          </div>
         </div>
-        {loadingAI && <p className="text-blue-500 text-sm">Extracting dimensions with AI...</p>}
-        <button onClick={handleCalculate} className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">Calculate</button>
+        {loadingAI && <p className="text-blue-500 text-sm text-center">Extracting dimensions with AI...</p>}
+        <button onClick={handleCalculate} className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition">Calculate</button>
 
         {result && (
-          <div className="space-y-2 text-sm bg-gray-50 p-4 rounded text-left">
+          <div className="space-y-2 text-sm bg-gray-50 p-4 rounded-xl border border-gray-200">
             <div><strong>Stone:</strong> {result.stone}</div>
             <div><strong>Dimensions:</strong> {result.width}" x {result.depth}"</div>
             <div><strong>Usable Area:</strong> {result.usableAreaSqft.toFixed(2)} sq ft</div>
@@ -107,8 +117,8 @@ export default function StoneTopEstimator() {
             <div><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</div>
             <div><strong>Fabrication Cost:</strong> ${result.fabricationCost.toFixed(2)}</div>
             <div><strong>Raw Cost:</strong> ${result.rawCost.toFixed(2)}</div>
-            <div><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</div>
-            <button onClick={handleDownloadPDF} className="w-full bg-blue-600 text-white py-2 mt-2 rounded hover:bg-blue-700 transition">Download PDF</button>
+            <div className="text-base font-semibold text-green-700"><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</div>
+            <button onClick={handleDownloadPDF} className="w-full bg-blue-600 text-white py-2 mt-2 rounded-lg hover:bg-blue-700 transition">Download PDF</button>
             <div style={{ display: 'none' }}><div ref={pdfRef}><h2>Stone Top Quote</h2><p><strong>Stone:</strong> {result.stone}</p><p><strong>Dimensions:</strong> {result.width}" x {result.depth}"</p><p><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</p></div></div>
           </div>
         )}
