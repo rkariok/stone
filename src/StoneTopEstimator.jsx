@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function StoneTopEstimator() {
   const [stoneOptions, setStoneOptions] = useState([]);
@@ -78,6 +78,7 @@ export default function StoneTopEstimator() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4 text-center">
+
         {!adminMode && (
           <div className="mb-4 text-center">
             <input
@@ -97,7 +98,8 @@ export default function StoneTopEstimator() {
               Enter Admin Mode
             </button>
           </div>
-        })
+        )}
+
         <img src="/AIC.jpg" alt="Logo" className="mx-auto mb-2" style={{ maxWidth: '140px' }} />
         <h1 className="text-base font-medium text-gray-700">Developed by Roy Kariok</h1>
 
@@ -158,6 +160,12 @@ export default function StoneTopEstimator() {
             <div className="text-center text-xl font-bold text-green-600 pt-2">
               Final Price: ${result.finalPrice.toFixed(2)}
             </div>
+          </div>
+        )}
+
+        {!adminMode && result && (
+          <div className="text-center text-xl font-bold text-green-600 pt-2">
+            Final Price: ${result.finalPrice.toFixed(2)}
           </div>
         )}
       </div>
