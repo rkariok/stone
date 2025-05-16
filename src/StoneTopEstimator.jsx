@@ -9,6 +9,9 @@ export default function StoneTopEstimator() {
   const [file, setFile] = useState(null);
   const [loadingAI, setLoadingAI] = useState(false);
   const [result, setResult] = useState(null);
+  const [adminMode, setAdminMode] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const correctPassword = 'stone123';
 
   useEffect(() => {
     fetch("https://opensheet.elk.sh/1g8w934dZH-NEuKfK8wg_RZYiXyLSSf87H0Xwec6KAAc/Sheet1")
@@ -75,6 +78,26 @@ export default function StoneTopEstimator() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4 text-center">
+        {!adminMode && (
+          <div className="mb-4 text-center">
+            <input
+              type="password"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              placeholder="Admin Password"
+              className="p-1 border rounded text-sm"
+            />
+            <button
+              onClick={() => {
+                if (adminPassword === correctPassword) setAdminMode(true);
+                else alert("Incorrect password");
+              }}
+              className="ml-2 px-2 py-1 bg-blue-500 text-white text-xs rounded"
+            >
+              Enter Admin Mode
+            </button>
+          </div>
+        })
         <img src="/AIC.jpg" alt="Logo" className="mx-auto mb-2" style={{ maxWidth: '140px' }} />
         <h1 className="text-base font-medium text-gray-700">Developed by Roy Kariok</h1>
 
@@ -121,7 +144,7 @@ export default function StoneTopEstimator() {
 
         <button onClick={handleCalculate} className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">Calculate</button>
 
-        {result && (
+        {adminMode && result && (
           <div className="bg-gray-50 rounded-xl p-5 text-sm space-y-2 border border-gray-200 mt-4 text-left">
             <div className="grid grid-cols-2 gap-2">
               <div><strong>Stone:</strong> {result.stone}</div>
