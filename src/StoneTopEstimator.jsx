@@ -147,7 +147,18 @@ export default function StoneTopEstimator() {
                   <span className="text-xs text-gray-500">AI will extract dimensions</span>) : (<span className="text-gray-400 text-center text-sm">Click to upload drawing<br />AI will extract dimensions</span>)}
                 </>
               ) : (
-                <span className="text-sm text-blue-600">Extracting dimensions...</span>) : (<span className="text-gray-400 text-center text-sm">Click to upload drawing<br />AI will extract dimensions</span>)}
+                loadingAI ? (
+  <span className="text-sm text-blue-600">Extracting dimensions...</span>
+) : file ? (
+  <span className="text-gray-600 text-center text-sm">
+    <strong>{file.name}</strong><br />
+    Uploaded. You can replace it by clicking here again.
+  </span>
+) : (
+  <span className="text-gray-400 text-center text-sm">
+    Click to upload drawing<br />AI will extract dimensions
+  </span>
+)}
               )}
             </label>
         {file && (
