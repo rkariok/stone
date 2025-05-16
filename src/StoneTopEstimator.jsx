@@ -1,6 +1,5 @@
 
 import { useState, useEffect, useRef } from 'react';
-import html2pdf from "html2pdf.js";
 
 export default function StoneTopEstimator() {
   const [stoneOptions, setStoneOptions] = useState([]);
@@ -10,7 +9,6 @@ export default function StoneTopEstimator() {
   const [file, setFile] = useState(null);
   const [loadingAI, setLoadingAI] = useState(false);
   const [result, setResult] = useState(null);
-  const pdfRef = useRef();
 
   useEffect(() => {
     fetch("https://opensheet.elk.sh/1g8w934dZH-NEuKfK8wg_RZYiXyLSSf87H0Xwec6KAAc/Sheet1")
@@ -99,20 +97,18 @@ export default function StoneTopEstimator() {
 
           <label className="flex items-center justify-center w-full h-24 px-4 transition bg-white border-2 border-dashed rounded-md cursor-pointer hover:border-blue-400">
             <input type="file" className="hidden" onChange={handleDrawingUpload} />
-            {
-              loadingAI ? (
-                <span className="text-sm text-blue-600">Extracting dimensions...</span>
-              ) : file ? (
-                <span className="text-gray-600 text-center text-sm">
-                  <strong>{file.name}</strong><br />
-                  Uploaded. You can replace it by clicking here again.
-                </span>
-              ) : (
-                <span className="text-gray-400 text-center text-sm">
-                  Click to upload drawing<br />AI will extract dimensions
-                </span>
-              )
-            }
+            {loadingAI ? (
+              <span className="text-sm text-blue-600">Extracting dimensions...</span>
+            ) : file ? (
+              <span className="text-gray-600 text-center text-sm">
+                <strong>{file.name}</strong><br />
+                Uploaded. You can replace it by clicking here again.
+              </span>
+            ) : (
+              <span className="text-gray-400 text-center text-sm">
+                Click to upload drawing<br />AI will extract dimensions
+              </span>
+            )}
           </label>
 
           {file && (
@@ -124,24 +120,23 @@ export default function StoneTopEstimator() {
         </div>
 
         <button onClick={handleCalculate} className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">Calculate</button>
-      
+
         {result && (
           <div className="bg-gray-50 rounded-xl p-5 text-sm space-y-2 border border-gray-200 mt-4 text-left">
             <div className="grid grid-cols-2 gap-2">
-              <div><strong>Stone:</strong> {{result.stone}}</div>
-              <div><strong>Size:</strong> {{result.width}}" x {{result.depth}}"</div>
-              <div><strong>Usable Area:</strong> {{result.usableAreaSqft.toFixed(2)}} sq ft</div>
-              <div><strong>Tops Per Slab:</strong> {{result.topsPerSlab}}</div>
-              <div><strong>Material:</strong> ${{result.materialCost.toFixed(2)}}</div>
-              <div><strong>Fabrication:</strong> ${{result.fabricationCost.toFixed(2)}}</div>
-              <div><strong>Raw Cost:</strong> ${{result.rawCost.toFixed(2)}}</div>
+              <div><strong>Stone:</strong> {result.stone}</div>
+              <div><strong>Size:</strong> {result.width}" x {result.depth}"</div>
+              <div><strong>Usable Area:</strong> {result.usableAreaSqft.toFixed(2)} sq ft</div>
+              <div><strong>Tops Per Slab:</strong> {result.topsPerSlab}</div>
+              <div><strong>Material:</strong> ${result.materialCost.toFixed(2)}</div>
+              <div><strong>Fabrication:</strong> ${result.fabricationCost.toFixed(2)}</div>
+              <div><strong>Raw Cost:</strong> ${result.rawCost.toFixed(2)}</div>
             </div>
             <div className="text-center text-xl font-bold text-green-600 pt-2">
-              Final Price: ${{result.finalPrice.toFixed(2)}}
+              Final Price: ${result.finalPrice.toFixed(2)}
             </div>
           </div>
-        )}}
-
+        )}
       </div>
     </div>
   );
