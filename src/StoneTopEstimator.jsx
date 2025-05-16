@@ -37,6 +37,7 @@ export default function StoneTopEstimator() {
         body: formData
       });
       const json = await res.json();
+      console.log('AI response:', json); // Debug line
       if (json.success) {
         setWidth(json.data.width);
         setDepth(json.data.depth);
@@ -64,7 +65,7 @@ export default function StoneTopEstimator() {
 
     const area = w * d;
     const usableAreaSqft = area / 144;
-    const topsPerSlab = Math.floor((63 * 126) / (area));
+    const topsPerSlab = Math.floor((63 * 126) / area);
     const materialCost = slabCost / topsPerSlab;
     const fabricationCost = usableAreaSqft * fabCost;
     const rawCost = materialCost + fabricationCost;
