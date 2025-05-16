@@ -1,8 +1,5 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Input } from "./components/ui/input";
-import { Button } from "./components/ui/button";
-import { Card, CardContent } from "./components/ui/card";
 import html2pdf from "html2pdf.js";
 
 export default function StoneTopEstimator() {
@@ -32,14 +29,19 @@ export default function StoneTopEstimator() {
     formData.append("image", file);
 
     try {
-      const res = await fetch("https://gpt4-drawing-backend-4kreag038-roy-karioks-projects.vercel.app/api/extract-dimensions", {
+      const res = await fetch("https://gpt4-drawing-backend.vercel.app/api/extract-dimensions", {
         method: "POST",
+        headers: {
+          "x-vercel-protection-bypass": "paramusicalkariokparamusicalkari"
+        },
         body: formData
       });
       const json = await res.json();
       if (json.success) {
         setWidth(json.data.width);
         setDepth(json.data.depth);
+      } else {
+        alert("AI Error: " + (json.error || "Unexpected response"));
       }
     } catch (err) {
       alert("Failed to extract dimensions from drawing.");
@@ -88,55 +90,47 @@ export default function StoneTopEstimator() {
 
   return (
     <div className="max-w-xl mx-auto p-4 space-y-4">
-      <Card>
-        <CardContent className="space-y-4 pt-4">
-          <h2 className="text-xl font-bold">Stone Top Estimator</h2>
-          <label className="block font-semibold">Select Stone Type:</label>
-          <select className="border rounded px-2 py-1 w-full" value={selectedStone} onChange={e => setSelectedStone(e.target.value)}>
-            {stoneOptions.map((stone, idx) => (
-              <option key={idx} value={stone["Stone Type"]}>{stone["Stone Type"]}</option>
-            ))}
-          </select>
-          <Input type="number" placeholder="Width (inches)" value={width} onChange={e => setWidth(e.target.value)} />
-          <Input type="number" placeholder="Depth (inches)" value={depth} onChange={e => setDepth(e.target.value)} />
-          <label className="block font-semibold mt-2">Upload Drawing:</label>
-          <Input type="file" accept="image/*,application/pdf" onChange={handleDrawingUpload} />
-          {loadingAI && <p className="text-sm text-blue-500">Extracting dimensions with AI...</p>}
-          <Button onClick={handleCalculate}>Calculate</Button>
+      <div className="text-center">
+        <img src="/AIC.jpg" alt="Logo" style={ maxWidth: '180px' } />
+        <p className="text-sm text-gray-500">Developed by Roy Kariok</p>
+      </div>
+      <div>
+        <label className="font-semibold">Stone Type:</label>
+        <select className="border w-full p-2" value={selectedStone} onChange={e => setSelectedStone(e.target.value)}>
+          {stoneOptions.map((stone, idx) => (
+            <option key={idx} value={stone["Stone Type"]}>{stone["Stone Type"]}</option>
+          ))}
+        </select>
+      </div>
+      <input type="number" className="border w-full p-2" placeholder="Width (in)" value={width} onChange={e => setWidth(e.target.value)} />
+      <input type="number" className="border w-full p-2" placeholder="Depth (in)" value={depth} onChange={e => setDepth(e.target.value)} />
+      <input type="file" onChange={handleDrawingUpload} className="w-full" />
+      {loadingAI && <p className="text-blue-500 text-sm">Extracting dimensions with AI...</p>}
+      <button onClick={handleCalculate} className="bg-black text-white px-4 py-2 rounded">Calculate</button>
 
-          {result && (
-            <>
-              <div className="pt-4 space-y-2">
-                <div><strong>Stone Type:</strong> {result.stone}</div>
-                <div><strong>Dimensions:</strong> {result.width}" x {result.depth}"</div>
-                <div><strong>Usable SQFT:</strong> {result.usableAreaSqft.toFixed(2)}</div>
-                <div><strong>Tops Per Slab:</strong> {result.topsPerSlab}</div>
-                <div><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</div>
-                <div><strong>Fabrication Cost:</strong> ${result.fabricationCost.toFixed(2)}</div>
-                <div><strong>Total Raw Cost:</strong> ${result.rawCost.toFixed(2)}</div>
-                <div><strong>Final Price (w/ Markup):</strong> ${result.finalPrice.toFixed(2)}</div>
-              </div>
-              <div className="pt-4">
-                <Button onClick={handleDownloadPDF}>Download Quote (PDF)</Button>
-              </div>
-              <div style={{ display: 'none' }}>
-                <div ref={pdfRef}>
-                  <h2>Stone Top Quote</h2>
-                  <p><strong>Stone Type:</strong> {result.stone}</p>
-                  <p><strong>Dimensions:</strong> {result.width}" x {result.depth}"</p>
-                  <p><strong>Usable SQFT:</strong> {result.usableAreaSqft.toFixed(2)}</p>
-                  <p><strong>Tops Per Slab:</strong> {result.topsPerSlab}</p>
-                  <p><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</p>
-                  <p><strong>Fabrication Cost:</strong> ${result.fabricationCost.toFixed(2)}</p>
-                  <p><strong>Total Raw Cost:</strong> ${result.rawCost.toFixed(2)}</p>
-                  <p><strong>Final Price (w/ Markup):</strong> ${result.finalPrice.toFixed(2)}</p>
-                  <p><em>Generated on: {new Date().toLocaleString()}</em></p>
-                </div>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+      {result && (
+        <>
+          <div className="space-y-1">
+            <div><strong>Stone Type:</strong> {result.stone}</div>
+            <div><strong>Dimensions:</strong> {result.width}" x {result.depth}"</div>
+            <div><strong>Usable Area:</strong> {result.usableAreaSqft.toFixed(2)} sq ft</div>
+            <div><strong>Tops Per Slab:</strong> {result.topsPerSlab}</div>
+            <div><strong>Material Cost:</strong> ${result.materialCost.toFixed(2)}</div>
+            <div><strong>Fabrication Cost:</strong> ${result.fabricationCost.toFixed(2)}</div>
+            <div><strong>Total Raw Cost:</strong> ${result.rawCost.toFixed(2)}</div>
+            <div><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</div>
+          </div>
+          <button onClick={handleDownloadPDF} className="bg-blue-600 text-white px-4 py-2 mt-2 rounded">Download PDF</button>
+          <div style={ display: 'none' }>
+            <div ref={pdfRef}>
+              <h2>Stone Top Quote</h2>
+              <p><strong>Stone:</strong> {result.stone}</p>
+              <p><strong>Dimensions:</strong> {result.width}" x {result.depth}"</p>
+              <p><strong>Final Price:</strong> ${result.finalPrice.toFixed(2)}</p>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
