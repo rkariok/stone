@@ -78,10 +78,10 @@ export default function StoneTopEstimator() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f7fa] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#f5f7fa] flex items-center justify-center px-4 py-10 text-center">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl space-y-6">
         <div className="flex justify-center">
-          <img src="/AIC.jpg" alt="Logo" className="w-28 h-auto rounded" />
+          <img src="/AIC.jpg" alt="Logo" className="max-w-xs w-full h-auto mx-auto mb-6" />
         </div>
         <h1 className="text-center text-lg font-semibold text-gray-600">Developed by Roy Kariok</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
