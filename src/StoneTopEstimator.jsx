@@ -32,7 +32,7 @@ export default function StoneTopEstimator() {
     formData.append("image", file);
 
     try {
-      const res = await fetch("https://gpt4-drawing-backend.vercel.app/extract-dimensions", {
+      const res = await fetch("https://gpt4-drawing-backend-4kreag038-roy-karioks-projects.vercel.app/api/extract-dimensions", {
         method: "POST",
         body: formData
       });
