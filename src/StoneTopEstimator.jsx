@@ -114,7 +114,7 @@ export default function StoneTopEstimator() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-5xl space-y-6 text-center">
-        <img src="/AIC.jpg" alt="Logo" className="mx-auto mb-2" style={{ maxWidth: \"140px\" }} />
+        <img src="/AIC.jpg" alt="Logo" className="mx-auto mb-2" style={{ maxWidth: '140px' }} />
 
         {!adminMode && (
           <div className="mb-4">
