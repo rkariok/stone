@@ -89,7 +89,9 @@ export default function StoneTopEstimator() {
 
       const area = w * d;
       const usableAreaSqft = (area / 144) * quantity;
-      const topsPerSlab = Math.floor((63 * 126) / area);
+      const slabWidth = parseFloat(stone["Slab Width"]) || 63;
+    const slabHeight = parseFloat(stone["Slab Height"]) || 126;
+    const topsPerSlab = Math.floor((slabWidth * slabHeight) / area);
       const materialCost = (slabCost / topsPerSlab) * quantity;
       const fabricationCost = usableAreaSqft * fabCost;
       const rawCost = materialCost + fabricationCost;
