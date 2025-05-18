@@ -186,6 +186,8 @@ export default function StoneTopEstimator() {
             </div>
 
             {products.length > 1 && (
+              <button type="button" onClick={() => removeProduct(index)} className="text-red-600 font-bold text-xl absolute top-2 right-2">&times;</button>
+            ) && (
               <button
                 type="button"
                 onClick={() => removeProduct(index)}
