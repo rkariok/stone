@@ -1,98 +1,235 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const defaultItem = {
-  productName: '',
-  size: '',
-  quantity: 1,
-  edgeDetail: 'Eased'
-};
+export default function StoneTopEstimator() {
+  const [stoneOptions, setStoneOptions] = useState([]);
+  const [selectedStone, setSelectedStone] = useState('');
+  const [width, setWidth] = useState('');
+  const [depth, setDepth] = useState('');
+  const [products, setProducts] = useState([{ quantity: 1, edgeDetail: 'Eased' }]);
+  const [file, setFile] = useState(null);
+  const [loadingAI, setLoadingAI] = useState(false);
+  const [result, setResult] = useState(null);
+  const [adminMode, setAdminMode] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const correctPassword = 'stone123';
 
-const StoneTopEstimator = () => {
-  const [items, setItems] = useState([{ ...defaultItem }]);
+  useEffect(() => {
+    fetch("https://opensheet.elk.sh/1g8w934dZH-NEuKfK8wg_RZYiXyLSSf87H0Xwec6KAAc/Sheet1")
+      .then((res) => res.json())
+      .then((data) => {
+        setStoneOptions(data);
+        setSelectedStone(data[0]?.["Stone Type"]);
+      });
+  }, []);
 
-  const handleChange = (index, field, value) => {
-    const updated = [...items];
-    updated[index][field] = value;
-    setItems(updated);
+  const handleDrawingUpload = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+    setFile(selectedFile);
+    setLoadingAI(true);
+    const formData = new FormData();
+    formData.append("image", selectedFile);
+
+    try {
+      const res = await fetch("https://gpt4-drawing-backend.vercel.app/api/extract-dimensions", {
+        method: "POST",
+        headers: {
+          "x-vercel-protection-bypass": "paramusicalkariokparamusicalkari"
+        },
+        body: formData
+      });
+      const json = await res.json();
+      if (json.success) {
+        setWidth(json.data.width);
+        setDepth(json.data.depth);
+      } else {
+        alert("AI Error: " + (json.error || "Unexpected response"));
+      }
+    } catch {
+      alert("Failed to extract dimensions from drawing.");
+    } finally {
+      setLoadingAI(false);
+    }
   };
 
-  const addItem = () => {
-    setItems([...items, { ...defaultItem }]);
-  };
+  const handleCalculate = () => {
+    const stone = stoneOptions.find(s => s["Stone Type"] === selectedStone);
+    if (!stone) return;
 
-  const removeItem = (index) => {
-    setItems(items.filter((_, i) => i !== index));
-  };
+    const slabCost = parseFloat(stone["Slab Cost"]);
+    const fabCost = parseFloat(stone["Fab Cost"]);
+    const markup = parseFloat(stone["Mark Up"]);
+    const w = parseFloat(width);
+    const d = parseFloat(depth);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Submitted Items:', items);
-    alert('Submitted! Check console.');
+    if (!w || !d || isNaN(slabCost) || isNaN(fabCost) || isNaN(markup)) return;
+
+    const area = w * d;
+    const usableAreaSqft = area / 144;
+    const topsPerSlab = Math.floor((63 * 126) / area);
+    const materialCost = slabCost / topsPerSlab;
+    const fabricationCost = usableAreaSqft * fabCost;
+    const rawCost = materialCost + fabricationCost;
+    const finalPrice = rawCost * markup;
+
+    setResult({ stone: selectedStone, width: w, depth: d, usableAreaSqft, topsPerSlab, materialCost, fabricationCost, rawCost, finalPrice });
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Stone Top Estimator</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {items.map((item, index) => (
-          <div key={index} className="border p-4 rounded space-y-4 bg-white shadow-md">
-            <div className="flex space-x-4">
-              <input
-                type="text"
-                placeholder="Product Name"
-                value={item.productName}
-                onChange={(e) => handleChange(index, 'productName', e.target.value)}
-                className="flex-1 border px-4 py-2 rounded"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Size (e.g. 24x36)"
-                value={item.size}
-                onChange={(e) => handleChange(index, 'size', e.target.value)}
-                className="flex-1 border px-4 py-2 rounded"
-                required
-              />
-            </div>
-            <div className="flex space-x-4">
-              <input
-                type="number"
-                placeholder="Quantity"
-                value={item.quantity}
-                onChange={(e) => handleChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                min="1"
-                className="w-1/2 border px-4 py-2 rounded"
-                required
-              />
-              <select
-                value={item.edgeDetail}
-                onChange={(e) => handleChange(index, 'edgeDetail', e.target.value)}
-                className="w-1/2 border px-4 py-2 rounded"
-              >
-                <option value="Eased">Eased</option>
-                <option value="1.5” mitered">1.5” mitered</option>
-              </select>
-            </div>
-            {items.length > 1 && (
-              <button
-                type="button"
-                onClick={() => removeItem(index)}
-                className="text-red-500 text-sm"
-              >
-                Remove
-              </button>
-            )}
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xl space-y-4 text-center">
+
+        {!adminMode && (
+          <div className="mb-4 text-center">
+            <input
+              type="password"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              placeholder="Admin Password"
+              className="p-1 border rounded text-sm"
+            />
+            <button
+              onClick={() => {
+                if (adminPassword === correctPassword) setAdminMode(true);
+                else alert("Incorrect password");
+              }}
+              className="ml-2 px-2 py-1 bg-blue-500 text-white text-xs rounded"
+            >
+              Enter Admin Mode
+            </button>
           </div>
-        ))}
-        <button type="button" onClick={addItem} className="bg-blue-600 text-white px-4 py-2 rounded">
-          Add Another Product
-        </button>
-        <button type="submit" className="ml-4 bg-green-600 text-white px-4 py-2 rounded">
-          Submit
-        </button>
-      </form>
+        )}
+
+        <img src="/AIC.jpg" alt="Logo" className="mx-auto mb-2" style={{ maxWidth: '140px' }} />
+        <h1 className="text-base font-medium text-gray-700">Developed by Roy Kariok</h1>
+
+        <div className="text-left space-y-2">
+          <label className="block text-sm font-medium text-gray-700">Stone Type</label>
+          <select
+            value={selectedStone}
+            onChange={(e) => setSelectedStone(e.target.value)}
+            className="w-full p-2 border rounded"
+          >
+            {stoneOptions.map((stone, idx) => (
+              <option key={idx} value={stone["Stone Type"]}>{stone["Stone Type"]}</option>
+            ))}
+          </select>
+
+          <div className="flex gap-4">
+            <input type="number" placeholder="Width (in)" value={width} onChange={e => setWidth(e.target.value)} className="flex-1 p-2 border rounded" />
+            <input type="number" placeholder="Depth (in)" value={depth} onChange={e => setDepth(e.target.value)} className="flex-1 p-2 border rounded" />
+          </div>
+
+          <label className="flex items-center justify-center w-full h-24 px-4 transition bg-white border-2 border-dashed rounded-md cursor-pointer hover:border-blue-400">
+            <input type="file" className="hidden" onChange={handleDrawingUpload} />
+            {loadingAI ? (
+              <span className="text-sm text-blue-600">Extracting dimensions...</span>
+            ) : file ? (
+              <span className="text-gray-600 text-center text-sm">
+                <strong>{file.name}</strong><br />
+                Uploaded. You can replace it by clicking here again.
+              </span>
+            ) : (
+              <span className="text-gray-400 text-center text-sm">
+                Click to upload drawing<br />AI will extract dimensions
+              </span>
+            )}
+          </label>
+
+          {file && (
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-600 mb-2">Preview:</p>
+              <img src={URL.createObjectURL(file)} alt="Uploaded preview" className="mx-auto rounded border max-h-60" />
+            </div>
+          )}
+        </div>
+
+        <button onClick={handleCalculate} className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition">Calculate</button>
+
+        {adminMode && result && (
+          <div className="bg-gray-50 rounded-xl p-5 text-sm space-y-2 border border-gray-200 mt-4 text-left">
+            <div className="grid grid-cols-2 gap-2">
+              <div><strong>Stone:</strong> {result.stone}</div>
+              <div><strong>Size:</strong> {result.width}" x {result.depth}"</div>
+              <div><strong>Usable Area:</strong> {result.usableAreaSqft.toFixed(2)} sq ft</div>
+              <div><strong>Tops Per Slab:</strong> {result.topsPerSlab}</div>
+              <div><strong>Material:</strong> ${result.materialCost.toFixed(2)}</div>
+              <div><strong>Fabrication:</strong> ${result.fabricationCost.toFixed(2)}</div>
+              <div><strong>Raw Cost:</strong> ${result.rawCost.toFixed(2)}</div>
+            </div>
+            <div className="text-center text-xl font-bold text-green-600 pt-2">
+              Final Price: ${result.finalPrice.toFixed(2)}
+            </div>
+          </div>
+        )}
+
+        {!adminMode && result && (
+          <div className="text-center text-xl font-bold text-green-600 pt-2">
+            Final Price: ${result.finalPrice.toFixed(2)}
+          </div>
+        )}
+      </div>
     </div>
   );
-};
+}
 
-export default StoneTopEstimator;
+
+// UI additions at the end of your main return block
+// Add below your existing JSX
+// Add after the result block if present
+/*
+<div className="space-y-4">
+  <h2 className="text-xl font-semibold">Additional Product Info</h2>
+  {products.map((product, index) => (
+    <div key={index} className="bg-gray-50 p-4 rounded shadow-md">
+      <div className="flex gap-4 mb-2">
+        <label className="flex-1">
+          Quantity:
+          <input
+            type="number"
+            min="1"
+            value={product.quantity}
+            onChange={(e) => {
+              const updated = [...products];
+              updated[index].quantity = parseInt(e.target.value);
+              setProducts(updated);
+            }}
+            className="w-full border p-2 rounded"
+          />
+        </label>
+        <label className="flex-1">
+          Edge Detail:
+          <select
+            value={product.edgeDetail}
+            onChange={(e) => {
+              const updated = [...products];
+              updated[index].edgeDetail = e.target.value;
+              setProducts(updated);
+            }}
+            className="w-full border p-2 rounded"
+          >
+            <option value="Eased">Eased</option>
+            <option value="1.5” mitered">1.5” mitered</option>
+          </select>
+        </label>
+      </div>
+      {products.length > 1 && (
+        <button
+          type="button"
+          onClick={() => setProducts(products.filter((_, i) => i !== index))}
+          className="text-red-600 text-sm"
+        >
+          Remove Product
+        </button>
+      )}
+    </div>
+  ))}
+  <button
+    type="button"
+    onClick={() => setProducts([...products, { quantity: 1, edgeDetail: 'Eased' }])}
+    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+  >
+    Add Another Product
+  </button>
+</div>
+*/
